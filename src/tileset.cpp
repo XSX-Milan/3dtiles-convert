@@ -29,7 +29,7 @@ extern "C" bool epsg_convert(int insrs, double* val, char* path) {
         delete poCT;
     }
     return false;
-} 
+}
 
 extern "C" bool wkt_convert(char* wkt, double* val, char* path) {
     CPLSetConfigOption("GDAL_DATA", path);
