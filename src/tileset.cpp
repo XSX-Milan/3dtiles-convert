@@ -9,6 +9,7 @@
 #include <cstring>
 #include <algorithm>
 
+#include <Eigen/Dense>
 #include "extern.h"
 
 ///////////////////////
@@ -85,64 +86,37 @@ extern "C"
 }
 
 
-std::vector<double> transfrom_xyz(double radian_x, double radian_y, double height_min){
-    double ellipsod_a = 40680631590769;
-    double ellipsod_b = 40680631590769;
-    double ellipsod_c = 40408299984661.4;
+std::vector<double> transfrom_xyz(double radian_x, double radian_y, double height_min) {
+    const double ellipsod_a = 40680631590769;
+    const double ellipsod_b = 40680631590769;
+    const double ellipsod_c = 40408299984661.4;
 
-    const double pi = std::acos(-1);
-    double xn = std::cos(radian_x) * std::cos(radian_y);
-    double yn = std::sin(radian_x) * std::cos(radian_y);
-    double zn = std::sin(radian_y);
+    const double cos_x = std::cos(radian_x);
+    const double sin_x = std::sin(radian_x);
+    const double cos_y = std::cos(radian_y);
+    const double sin_y = std::sin(radian_y);
 
-    double x0 = ellipsod_a * xn;
-    double y0 = ellipsod_b * yn;
-    double z0 = ellipsod_c * zn;
-    double gamma = std::sqrt(xn*x0 + yn*y0 + zn*z0);
-    double px = x0 / gamma;
-    double py = y0 / gamma;
-    double pz = z0 / gamma;
-    
-    double dx = xn * height_min;
-    double dy = yn * height_min;
-    double dz = zn * height_min;
+    // Calculate the coordinates in ECEF
+    const double x0 = ellipsod_a * cos_y * cos_x;
+    const double y0 = ellipsod_b * cos_y * sin_x;
+    const double z0 = ellipsod_c * sin_y;
+    const double gamma = std::sqrt(x0 * x0 + y0 * y0 + z0 * z0);
 
-    std::vector<double> east_mat = {-y0,x0,0};
-    std::vector<double> north_mat = {
-        (y0*east_mat[2] - east_mat[1]*z0),
-        (z0*east_mat[0] - east_mat[2]*x0),
-        (x0*east_mat[1] - east_mat[0]*y0)
-    };
-    double east_normal = std::sqrt(
-        east_mat[0]*east_mat[0] + 
-        east_mat[1]*east_mat[1] + 
-        east_mat[2]*east_mat[2]
-        );
-    double north_normal = std::sqrt(
-        north_mat[0]*north_mat[0] + 
-        north_mat[1]*north_mat[1] + 
-        north_mat[2]*north_mat[2]
-        );
+    // Calculate the unit vectors
+    const Eigen::Vector3d p(x0, y0, z0);
+    const Eigen::Vector3d east_mat = (-y0 * p + x0 * Eigen::Vector3d::UnitZ()).normalized();
+    const Eigen::Vector3d north_mat = (east_mat.cross(p)).normalized();
 
-    std::vector<double> matrix = {
-        east_mat[0] / east_normal,
-        east_mat[1] / east_normal,
-        east_mat[2] / east_normal,
-        0,
-        north_mat[0] / north_normal,
-        north_mat[1] / north_normal,
-        north_mat[2] / north_normal,
-        0,
-        xn,
-        yn,
-        zn,
-        0,
-        px + dx,
-        py + dy,
-        pz + dz,
-        1
-    };
-    return matrix;
+    // Calculate the transformation matrix
+    Eigen::Matrix4d matrix = Eigen::Matrix4d::Identity();
+    matrix.block<3, 1>(0, 0) = east_mat;
+    matrix.block<3, 1>(0, 1) = north_mat;
+    matrix.block<3, 1>(0, 2) = p.normalized();
+    matrix(0, 3) = height_min * cos_y * cos_x;
+    matrix(1, 3) = height_min * cos_y * sin_x;
+    matrix(2, 3) = height_min * sin_y;
+
+    return std::vector<double>(matrix.data(), matrix.data() + matrix.size());
 }
 
 extern "C" void transform_c(double center_x, double center_y, double height_min, double* ptr) {
