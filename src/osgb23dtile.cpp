@@ -85,21 +85,36 @@ public:
     ~InfoVisitor() {
     }
 
-    void apply(osg::Geometry& geometry){
+    /**用于遍历节点时处理几何信息。在方法中，它首先将遍历到的 osg::Geometry 对象的指针加入到 geometry_array 中，
+    *然后查看其状态集合中是否存在纹理，如果存在，则将纹理对象的指针加入到 texture_array 中，
+    *并将该几何体的指针和纹理对象的指针关联起来存储到 texture_map 中。
+	*/
+    void apply(osg::Geometry& geometry) {
         geometry_array.push_back(&geometry);
-        if (auto ss = geometry.getStateSet() ) {
-            osg::Texture* tex = dynamic_cast<osg::Texture*>(ss->getTextureAttribute(0, osg::StateAttribute::TEXTURE));
-            if (tex) {
-                texture_array.insert(tex);
-                texture_map[&geometry] = tex;
+        osg::StateSet* ss = geometry.getStateSet();
+        if (ss) {
+            osg::StateAttribute* attr = ss->getTextureAttribute(0, osg::StateAttribute::TEXTURE);
+            if (attr) {
+                osg::Texture* tex = dynamic_cast<osg::Texture*>(attr);
+                if (tex) {
+                    texture_array.insert(tex);
+                    texture_map[&geometry] = tex;
+                }
             }
         }
+
+        // 保存当前处理的 geometry 对象
+        //current_geometry = &geometry;
     }
 
+    /**递归访问PagedLOD节点的所有子节点。在函数中，会遍历该节点的所有子节点，
+    *获取每个子节点的文件名，将子节点的文件名加上路径前缀，将处理好的子节点文件名存入vector中。
+    *然后，通过递归调用traverse函数继续处理子节点。这样，可以遍历所有PagedLOD节点及其子节点，并获取它们的文件名。
+    */
     void apply(osg::PagedLOD& node) {
         //std::string path = node.getDatabasePath();
         int n = node.getNumFileNames();
-        for (size_t i = 1; i < n; i++)
+        for (size_t i = 1; i < n; ++i)
         {
             std::string file_name = path + "/" + node.getFileName(i);
             sub_node_names.push_back(file_name);

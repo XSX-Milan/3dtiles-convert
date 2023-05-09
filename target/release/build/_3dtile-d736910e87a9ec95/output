@@ -24,6 +24,13 @@ DEBUG = Some("false")
 running: "D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\cl.exe" "-nologo" "-MD" "-O2" "-Brepro" "-I" "./src" "-I" "./src/osg" "-Zi" "-Gm" "-INCREMENTAL" "-DWIN32" "-D_WINDOWS" "-FoD:\\Work\\WorkSpace\\Code\\3dtiles-convert\\target\\release\\build\\_3dtile-d736910e87a9ec95\\out\\./src/tileset.o" "-c" "./src/tileset.cpp"
 cargo:warning=cl: 命令行 warning D9035 :“Gm”选项已否决，并将在将来的版本中移除
 tileset.cpp
+D:\Work\WorkSpace\Code\3dtiles-convert\src\Eigen\src/Core/arch/Default/Half.h(1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\Work\WorkSpace\Code\3dtiles-convert\src\Eigen\src/Core/arch/Default/BFloat16.h(1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\Work\WorkSpace\Code\3dtiles-convert\src\Eigen\src/Core/arch/Default/GenericPacketMathFunctions.h(676): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\ostream(396): warning C4530: 使用了 C++ 异常处理程序，但未启用展开语义。请指定 /EHsc
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\ostream(389): note: 在编译 类 模板 成员函数“std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(float)”时
+D:\Work\WorkSpace\Code\3dtiles-convert\src\Eigen\src/Core/arch/Default/Half.h(762): note: 查看对正在编译的函数 模板 实例化“std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::operator <<(float)”的引用
+D:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\ostream(671): note: 查看对正在编译的 类 模板 实例化“std::basic_ostream<char,std::char_traits<char>>”的引用
 exit code: 0
 running: "D:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\cl.exe" "-nologo" "-MD" "-O2" "-Brepro" "-I" "./src" "-I" "./src/osg" "-Zi" "-Gm" "-INCREMENTAL" "-DWIN32" "-D_WINDOWS" "-FoD:\\Work\\WorkSpace\\Code\\3dtiles-convert\\target\\release\\build\\_3dtile-d736910e87a9ec95\\out\\./src/shp23dtile.o" "-c" "./src/shp23dtile.cpp"
 cargo:warning=cl: 命令行 warning D9035 :“Gm”选项已否决，并将在将来的版本中移除
